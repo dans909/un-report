@@ -1,0 +1,28 @@
+{
+    "id": "E044B63A",
+    "path": null,
+    "project_path": null,
+    "type": "object_explorer",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1644899094802.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "id": "334e918fb006435281baa7e921b7ea16",
+        "name": "animated_plot",
+        "title": "animated_plot",
+        "language": "R",
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 7598452318654177312,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1644899094802,
+    "read_only": false,
+    "read_only_alternatives": []
+}
