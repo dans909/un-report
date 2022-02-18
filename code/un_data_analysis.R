@@ -216,3 +216,5 @@ ggplot(gapminder_co2, aes(x=gdpPercap, y=lifeExp))+
     mutate(perpop=pop/sum(pop)) %>%
     group_by(region)%>%
     summarize(sumperco2=sum(perCO2),sumperpop=sum(perpop))
+  
+  #testing hullo
