@@ -1,0 +1,28 @@
+---
+title: "Workshop Markdown"
+author: "danS"
+date: "18/02/2022"
+output: html_document
+---
+
+```{r setup and packages, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+```
+This report was prepared to the attention of the United Nations. It analyzes the relationship between a country's GDP, its life expectancy and CO2 emissions. Our goal is to determine to what degree a country’s economic strength or weakness may be related to its public health status and impact on climate pollution. We hypothesize that both life expectancy and CO2 emissions increase with a country's GDP.
+
+```{r data, include=FALSE}
+gapminder_1997 <- read_csv("C:/Users/Dan/Desktop/un-report/data/gapminder_1997.csv")
+
+```
+
+```{r gdp_lifeexp_1997, echo=FALSE}
+
+gapminder_1997%>%
+  ggplot() +
+  aes(x=gdpPercap, y=lifeExp, color=continent, size=pop/1000000)+
+  geom_point()+
+  labs(x="GDP Per Capita", y="Life Expectancy",
+       title="Do people in wealthy countries live longer?", size="Population (in millions)")
+```
