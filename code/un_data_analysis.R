@@ -217,4 +217,45 @@ ggplot(gapminder_co2, aes(x=gdpPercap, y=lifeExp))+
     group_by(region)%>%
     summarize(sumperco2=sum(perCO2),sumperpop=sum(perpop))
   
+  gapminder_co2 %>%
+    mutate(perpop=pop/sum(pop), perco2=total_emissions/sum(total_emissions)) %>%
+    filter(country == "United States") %>%
+    select(country, perpop, perco2)
+  
+gapminder_co2 %>%
+  mutate(region=if_else(country == "Canada" | country == "Mexico" |
+                          country == "United States", "north", "south")) %>%
+  mutate(perco2=100*(total_emissions/sum(total_emissions))) %>%
+  group_by(region) %>%
+  summarize(perco2) %>%
+  ggplot(aes(x=region, y=perco2, fill=region)) +
+  geom_col()+
+  theme(axis.text.x=element_text(angle=90, vjust=0.5, hjust=1))
+  
+gapminder_co2 %>%
+  mutate(region=if_else(country == "Canada" | country == "Mexico" |
+                          country == "United States", "north", "south")) %>%
+  mutate(perco2=100*(total_emissions/sum(total_emissions))) %>%
+  ggplot(aes(x=reorder(country, - perco2), y=perco2, fill=region))+
+  geom_col()+
+  theme(axis.text.x=element_text(angle=90, vjust=0.5, hjust=1)) 
+
+
+gapminder_co2 %>%
+  arrange(per_capita_emissions) %>%
+  filter(country =="Haiti" | country =="Paraguay" | country =="Nicaragua") %>%
+  ggplot(aes(x=reorder(country, - per_capita_emissions), y=per_capita_emissions))+
+  geom_col()
+
   #testing hullo
+
+#can use the arrange() function to sort data by specific value
+#arrange() automatically sorts by ascending values
+#in this case, we sort by descending average continent lifeExp values
+  
+  gapminder_data %>%
+    group_by(continent) %>%
+    summarize(average = mean(lifeExp)) %>%
+    arrange(desc(average))
+  
+    
