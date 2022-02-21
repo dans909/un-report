@@ -1,0 +1,171 @@
+---
+title: "Markdown Exercises"
+author: "Dan"
+date: "2/18/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r data, include=FALSE}
+gapminder <- read.csv("C:/Users/Dan/Desktop/un-report/data/gapminder_data.csv")
+
+```
+
+```{r year vs population, echo=FALSE}
+
+gapminder %>%
+  ggplot(aes(x=year, y=pop)) +
+  geom_point() +
+  facet_grid(rows=vars(continent))
+
+gapminder %>%
+  group_by(country) %>%
+  summarize(pop) %>%
+  arrange(desc(pop))
+
+gapminder %>%
+  filter(country != "China" & country != "India") %>%
+  ggplot(aes(x=year, y=pop, group=country)) +
+  geom_point()+
+  geom_line()+
+  facet_wrap(vars(continent))+
+  theme(axis.text.x = element_text(angle=90, vjust=0.5, hjust=1))
+
+gapminder %>%
+  filter(year == 1982) %>%
+  slice_max(lifeExp)
+
+gapminder %>%
+  group_by(year) %>%
+  slice_max(lifeExp)
+
+gapminder %>%
+  filter(continent == "Asia") %>%
+  ggplot(aes(x=year, y=lifeExp, group=year))+
+  geom_boxplot()
+
+gapminder %>%
+  group_by(year) %>%
+  select(country, year, lifeExp) %>%
+  slice_min(lifeExp, n=2)
+
+gapminder %>%
+  ggplot(aes(x=year, y=lifeExp, group=year)) +
+  geom_boxplot()+
+  facet_wrap(vars(continent))
+
+newtable <- gapminder %>%
+  select(country, year, lifeExp) %>%
+  pivot_wider(names_from=year, values_from=lifeExp) %>%
+  select(country, '2007', '1952')
+  
+colnames(newtable) <- c("Country", "life2007", "life1952")
+
+newtable %>%
+  group_by(Country)%>%
+  summarize(diff=life2007-life1952) %>%
+  arrange(desc(diff))
+
+
+```
+
+
+```{r new exercise}
+
+rnd <- read.csv("C:/Users/Dan/Desktop/un-report/data/rnd-un-data.csv", skip = 1) %>%
+  rename_all(tolower) %>%
+  mutate(series=recode(series,
+                       "Gross domestic expenditure on R & D: as a percentage of GDP (%)" = 'gdp_pct',
+"Gross domestic expenditure on R & D: Business enterprises (%)" = 'business',
+"Gross domestic expenditure on R & D: Government (%)" = 'government',
+"Gross domestic expenditure on R & D: Higher education (%)" = 'higher_ed',
+"Gross domestic expenditure on R & D: Funds from abroad (%)" = 'abroad',
+"Gross domestic expenditure on R & D: Not distributed (%)" = 'not_distributed',
+"Gross domestic expenditure on R & D: Private non-profit (%)" = 'non_profit')) %>%
+  pivot_wider(names_from = series, values_from = value)
+
+
+rnd %>%
+  filter(!is.na(gdp_pct)) %>%
+  ggplot(aes(x=gdp_pct)) + 
+  geom_histogram(bins = 40)
+
+
+rnd %>%
+  ggplot(aes(x=year, y=gdp_pct))+
+  geom_point(alpha=0.5)+
+  xlab('')
+
+rnd %>%
+  filter(!is.na(gdp_pct)) %>%
+  ggplot(aes(x=as.character(year), y=gdp_pct))+
+  geom_boxplot()
+
+```
+
+``` {r exercise 3}
+
+co2_emissions_dirty <- read_csv('C:/Users/Dan/Desktop/un-report/data/co2-un-data.csv', skip=2, 
+         col_names=c("region", "country", "year", 
+        "series", "value", "footnotes", "source"))
+
+co2_emissions <- co2_emissions_dirty %>%
+  select(country, year, series, value) %>%
+  mutate(series = recode(series, "Emissions (thousand metric tons of carbon dioxide)" = "total_emissions", 
+                         "Emissions per capita (metric tons of carbon dioxide)" = "per_capita_emissions")) %>%
+  pivot_wider(names_from=series, values_from=value) %>%
+  mutate(country=recode(country,"Bolivia (Plurin. State of)" = "Bolivia", 
+                        "United States of America" = "United States",
+                        "Venezuela (Boliv. Rep. of)" = "Venezuela"))
+
+
+
+rnd_clean <- rnd %>%
+  rename(country = x) %>%
+  select(gdp_pct, country, year)
+
+co2_rnd <- full_join(co2_emissions, rnd_clean, by=c('country', 'year'))
+
+co2_rnd %>%
+  summarize_all(funs(sum(is.na(.)))) 
+
+co2_rnd <- co2_rnd %>%
+  filter(!is.na(gdp_pct) & !is.na(total_emissions) & !is.na(per_capita_emissions))
+
+co2_rnd %>%
+  group_by(year) %>%
+  summarize(count=n())
+
+co2_rnd %>%
+  ggplot(aes(x=gdp_pct, y=per_capita_emissions)) +
+  geom_point() + 
+  facet_wrap(vars(year))
+
+?facet_wrap
+
+co2_rnd %>%
+  group_by(country) %>%
+  summarize(count=n()) %>%
+  filter(count==5)
+
+co2_rnd
+
+co2_rnd %>%
+  filter(country == 'Cuba' | country == 'Azerbaijan' | country == 'Panama') %>%
+  select(country, year, per_capita_emissions, gdp_pct) %>%
+  pivot_longer(cols = 'per_capita_emissions':'gdp_pct', names_to = 'value_type', values_to = 'value') %>%
+  ggplot(aes(x=year, y=value, color=value_type)) +
+  geom_line() +
+  scale_color_discrete(name = '', labels =c('gdp percent', 'per capita emissions')) + facet_wrap(vars(country))
+
+co2_rnd %>%
+  group_by(country) %>%
+  summarize(yearcount=n()) %>%
+  group_by(yearcount) %>%
+  summarize(count=n())
+
+```
